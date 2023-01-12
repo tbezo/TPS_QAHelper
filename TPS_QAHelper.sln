@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32929.386
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TPS_QAHelper", "TPS_QAHelper.csproj", "{8310CA74-132F-47B9-AD45-0863C5F6F7B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8310CA74-132F-47B9-AD45-0863C5F6F7B0}.Debug|x64.ActiveCfg = Debug|x64
+		{8310CA74-132F-47B9-AD45-0863C5F6F7B0}.Debug|x64.Build.0 = Debug|x64
+		{8310CA74-132F-47B9-AD45-0863C5F6F7B0}.Release|x64.ActiveCfg = Release|x64
+		{8310CA74-132F-47B9-AD45-0863C5F6F7B0}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4BBFEEFF-ED7E-4E0E-B71E-5756F252C240}
+	EndGlobalSection
+EndGlobal
