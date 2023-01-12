@@ -30,9 +30,11 @@ namespace VMS.TPS
             string baseaddress = "";                                                // web address for qatrack API (a.e. https://qatrack.contoso.org/api)
             string token = "";                                                      // API token
             string uname = "Eclipse";                                               // unit name
-            string user = context.CurrentUser.Id;                                   // Eclipse user
             string utcName1 = "TPS QA Dosisberechnung";                             // names of the QATrack+ Unit Test Collections (testlist name)
             string utcName2 = "TPS QA DVH Data";
+
+            // Eclipse config
+            string user = context.CurrentUser.Id;                                   // Eclipse user
             string courseName = "QS Eclipse QAT";                                   // course with all QA plans
             string psumName = "DVH-Summe";                                          // plan sum to extract DVH data from
             string structString = "geo";                                            // starting string of structure ids to evaluate
@@ -55,7 +57,7 @@ namespace VMS.TPS
             Dictionary<string, TestData> tdd; // = new Dictionary<string, TestData>();
             try
             {
-                tdd = ExtractPlanData(courseName, context); // "QS Eclipse QAT" = name of the Qa Course 
+                tdd = ExtractPlanData(courseName, context);
             }
             catch (Exception e)
             {
@@ -76,7 +78,7 @@ namespace VMS.TPS
             Task<string> utcTask2;
             try
             {
-                utcTask2 = GetUnitTestCollection(utcName2, uname, baseaddress, token); // "TPS QA DVH Data" = 
+                utcTask2 = GetUnitTestCollection(utcName2, uname, baseaddress, token);
             }
             catch (Exception e)
             {
@@ -88,7 +90,7 @@ namespace VMS.TPS
             Dictionary<string, TestData> tdd2; // = new Dictionary<string, TestData>();
             try
             {
-                tdd2 = ExtractDVHData(psumName, structString, context); // "DVH-Summe" = Id of the plan sum to work with
+                tdd2 = ExtractDVHData(psumName, structString, context);
             }
             catch (Exception e)
             {
