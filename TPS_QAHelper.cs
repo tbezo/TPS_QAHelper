@@ -13,7 +13,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-[assembly: AssemblyVersion("0.1.0.1")]
+[assembly: AssemblyVersion("0.1.0.2")]
 
 namespace VMS.TPS
 {
@@ -38,7 +38,6 @@ namespace VMS.TPS
             string courseName = "QS Eclipse QAT";                                   // course with all QA plans
             string psumName = "DVH-Summe";                                          // plan sum to extract DVH data from
             string structString = "geo";                                            // starting string of structure ids to evaluate
-
 
             // try to get the QATrack+ unit test collection to post data to
             string utc_url;
@@ -213,9 +212,10 @@ namespace VMS.TPS
         /// </summary>
         /// <param name="qaCourseName">Id of the course</param>
         /// <param name="context">Eclipse Context</param>
+        /// <param name="renormElectron">Renormalize electron plan dose values to 100 MU</param>
         /// <returns>Dictionary of QATrack+ test macro name and TestData values</returns>
         /// <exception cref="Exception">Exception no plans found</exception>
-        public Dictionary<string, TestData> ExtractPlanData(string qaCourseName, ScriptContext context)
+        public Dictionary<string, TestData> ExtractPlanData(string qaCourseName , ScriptContext context, bool renormElectron = true)
         {
             // dict for test macro names and test data
             Dictionary<string, TestData> tdd = new Dictionary<string, TestData>();
@@ -230,14 +230,8 @@ namespace VMS.TPS
             // extract dose from Reference Points
             foreach (ExternalPlanSetup plan in ps.OrderBy(x => x.Name)) // Plan names: 01, 02, 03, ...
             {
-                // get dose from reference points for testdata
-                foreach (ReferencePoint rp in plan.ReferencePoints.OrderBy(x => x.Id))
-                {
-                    string tname1 = "p" + plan.Name + "_" + rp.Id;
-                    tdd.Add(tname1, new TestData { value = DoseAtRefPt(rp, plan) });
-                }
-
                 // create list of beams and sum up the MUs for testdata
+                string tname2 = "p" + plan.Name + "_MU";
                 List<Beam> beams = plan.Beams.Where(y => !(y.IsSetupField)).ToList();
                 double mu_sum = double.NaN;
                 mu_sum = beams.Select(x => x.Meterset.Value).Sum();
@@ -247,12 +241,29 @@ namespace VMS.TPS
                     foreach (Beam nanbeam in beams)
                     {
                         beam_values += nanbeam.Id + ": " + nanbeam.Meterset.Value.ToString() + " MU\n";
-                    }                    
+                    }
                     MessageBox.Show("Error: MU sum is NaN in Plan " + plan.Name + ". Value skipped." + "\n" + beam_values);
+                    tdd.Add(tname2, new TestData { skipped = true });
                 }
-                string tname2 = "p" + plan.Name + "_MU";
-                if (!double.IsNaN(mu_sum)) { tdd.Add(tname2, new TestData { value = mu_sum }); }
-                else { tdd.Add(tname2, new TestData { skipped = true }); }
+                else { tdd.Add(tname2, new TestData { value = mu_sum }); }
+
+                // renormalize dose value from electron plans to 100 MU, since Eclipse won't keep the MU between recalculations.
+                double renorm = 1.0;
+                if (renormElectron)
+                {
+                    if (plan.Beams.Count(x => x.EnergyModeDisplayName.Contains("E")) == 1)
+                    {
+                        renorm = 100.0 / mu_sum;
+                    }
+                }
+
+                // get dose from reference points for testdata
+                foreach (ReferencePoint rp in plan.ReferencePoints.OrderBy(x => x.Id))
+                {
+                    string tname1 = "p" + plan.Name + "_" + rp.Id;
+                    tdd.Add(tname1, new TestData { value = DoseAtRefPt(rp, plan) * renorm });
+                }
+
             }
             return tdd;
         }
