@@ -44,7 +44,7 @@ namespace VMS.TPS
             Task<string> utcTask;
             try
             {
-                utcTask = GetUnitTestCollection(utcName1, uname, baseaddress, token);
+                utcTask = GetUnitTestCollectionAsync(utcName1, uname, baseaddress, token);
             }
             catch (Exception e)
             {
@@ -69,15 +69,15 @@ namespace VMS.TPS
             utc_url = utcTask.Result;
 
             // post TestData for Referenze Points and Monitor Units
-            Task<int> res1 = PostTestData(tdd, user, utc_url, baseaddress, token);
-            res1.Wait();
+            Task<int> res1Task = PostTestDataAsync(tdd, user, utc_url, baseaddress, token);
+            res1Task.Wait();
 
             // try to get the QATrack+ unit test collection to post data to
             string utc_url2;
             Task<string> utcTask2;
             try
             {
-                utcTask2 = GetUnitTestCollection(utcName2, uname, baseaddress, token);
+                utcTask2 = GetUnitTestCollectionAsync(utcName2, uname, baseaddress, token);
             }
             catch (Exception e)
             {
@@ -102,8 +102,8 @@ namespace VMS.TPS
             utc_url2 = utcTask2.Result;
 
             // post TestData for Referenze Points and Monitor Units
-            Task<int> res2 = PostTestData(tdd2, user, utc_url2, baseaddress, token);
-            res2.Wait();
+            Task<int> res2Task = PostTestDataAsync(tdd2, user, utc_url2, baseaddress, token);
+            res2Task.Wait();
 
         }
 
@@ -116,7 +116,7 @@ namespace VMS.TPS
         /// <param name="token">QATrack+ API Token</param>
         /// <exception cref="Exception">Unit test collection not unique</exception>
         /// <returns>URL of Unit Test Collection from given unit and testlist</returns>
-        public async Task<string> GetUnitTestCollection(string tlname, string uname, string baseaddress, string token)
+        public async Task<string> GetUnitTestCollectionAsync(string tlname, string uname, string baseaddress, string token)
         {
             UnitTestCollection_Results jres;
 
@@ -151,7 +151,7 @@ namespace VMS.TPS
         /// <param name="baseaddress"></param>
         /// <param name="token">QATrack+ API Token</param>
         /// <returns>0 if ok, 1 if error occured</returns>
-        public async Task<int> PostTestData(Dictionary<string, TestData> tests, string user, string utc_url, string baseaddress, string token)
+        public async Task<int> PostTestDataAsync(Dictionary<string, TestData> tests, string user, string utc_url, string baseaddress, string token)
         {
             //get the full location of the assembly with DaoTests in it
             string dllLocation = Assembly.GetExecutingAssembly().Location;
